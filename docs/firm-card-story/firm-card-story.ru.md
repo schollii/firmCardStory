@@ -1,6 +1,6 @@
 Сегодня мы рассмотрим пример реализации несложного картографического сервиса по [БЭМ-методологии](http://ru.bem.info/).
 
-Введение
+### Введение
 =============
 
 Менеджер:
@@ -19,58 +19,64 @@
 
 Назовем наш проект firmCardStory.
 
-Инициализация проекта
+### Инициализация проекта
 =============
 
 Инициализируем заготовку проекта:
 
-    git clone https://github.com/bem/project-stub.git firmCardStory
-    cd firmCardStory
-    npm install
+```sh
+git clone https://github.com/bem/project-stub.git firmCardStory
+cd firmCardStory
+npm install
+```
 
 Выполним сборку проекта:
 
-    $ ./node_modules/bem/bin/bem make
+```sh
+$ enb make
+```
 
 Откроем в браузере файл desktop.bundles/index/index.html и посмотрим что страница собралась:
 ![Результат сборки](http://img-fotki.yandex.ru/get/6705/221798411.0/0_b9e18_bcebeab1_XL.jpg)
 
-Для разработки также удобно использовать [bem server](http://ru.bem.info/tools/bem/commands/), который будет выполнять сборку проекта по запросу от браузера, для этого нужно запустить его находясь в папке проекта:
+Для разработки также удобно использовать `enb server`, который будет выполнять сборку проекта по запросу от браузера, для этого нужно запустить его находясь в папке проекта:
 
-    $ ./node_modules/bem/bin/bem server
+    $ ./node_modules/enb/bin/enb server
 
 И зайти в браузере по адресу: http://localhost:8080/desktop.bundles/index
 
-Макет страницы
+### Макет страницы
 =============
 
 Изменим структуру страницы, заполнив файл desktop.bundles/index/index.bemjson.js следующим содержимым:
 
-    ({
-        block: 'b-page',
-        title: 'Карта Новосибирска',
-        head: [
-           { elem: 'css', url: '_index.css' },
-           { elem: 'css', url: '_index', ie: true },
-           { elem: 'js', url: 'http://yandex.st/jquery/1.8.2/jquery.min.js' },
-           { elem: 'js', url: '_index.js' }
-        ],
-        content: [
-            { block: 'b-map' }
-        ]
-    })
+```js
+({
+    block: 'page',
+    title: 'Карта Новосибирска',
+    styles: [
+        { elem: 'css', url: 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css' },
+        { elem: 'css', url: 'index.min.css' }
+    ],
+    scripts: [
+        { elem: 'js', url: 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js' },
+        { elem: 'js', url: 'index.min.js' }
+    ],
+    content: [
+        { block: 'map' }
+    ]
+});
+```
 
 В данном файле мы описали, что:
-* Для формирования страницы используется блок [b-page](https://github.com/bem/bem-bl/tree/master/blocks-desktop/b-page) библиотеки [bem-bl](http://bem.github.com/bem-bl/index.ru.html);
+* Для формирования страницы используется блок [page](http://ru.bem.info/libs/bem-core/v2/desktop/page/) библиотеки [bem-core](http://ru.bem.info/libs/bem-core/);
 * Заголовок страницы - Карта Новосибирска;
 * На страницу будут подключены css и js файлы;
-* Контент страницы будет формироваться из блока b-map.
+* Контент страницы будет формироваться из блока map.
 
-Так как файл _index.ie.css нам нужен только для IE, мы указали свойство ie в true. Узнать о существовании такого свойства можно заглянув в код [bemhtml-шаблона](https://github.com/bem/bem-bl/blob/master/blocks-desktop/b-page/b-page.bemhtml) блока b-page.
+Подробнее о BEMJSON можно почитать [в документации](http://ru.bem.info/technology/bemjson/2.3.0/bemjson/).
 
-Подробнее о bemhtml-шаблонизаторе можно почитать [в документации](http://bem.github.com/bem-bl/pages/bemhtml-syntax/bemhtml-syntax.ru.html).
-
-Блок i-firmcard
+### Блок `firmcard`
 =============
 
 Нам нужен блок, в зону ответственности которого входит:
@@ -79,154 +85,185 @@
 
 Создадим этот блок на уровне переопределения desktop.blocks в технологии js:
 
-    $ ./node_modules/bem/bin/bem create block i-firmcard -l desktop.blocks -T js
+```sh
+$ mkdir ./desktop.blocks/firmcard
+$ touch ./desktop.blocks/firmcard/firmcard.js
+```
 
-Опишем файл desktop.blocks/i-firmcard/i-firmcard.js:
+Опишем файл desktop.blocks/firmcard/firmcard.js:
 
-    BEM.decl ('i-firmcard', {}, {
+```js
+modules.define('firmcard', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $) {
+    provide(BEMDOM.decl(this.name, {}, {
         /**
-        * @param {Object} data Firm info
-        * @return {String}
-        */
+         * @param {Object} data Firm info
+         * @return {String}
+         */
         getFormattedText: function (data) {
-           var content = '<b>Информация:</b><br />';
-           content += 'Адрес: ' + data.name + '<br />';
-           content += 'Тип: ' + data.attributes.purpose;
-           return content;
+            return [
+                '<b>Информация:</b><br />',
+                'Адрес: ' + data.name,
+                'Тип: ' + data.attributes.purpose
+            ].join('<br>');
         }
-    });
+    }));
+});
+```
 
-Для описания карточки мы воспользовались библиотекой i-bem.js. Подробнее о данной библиотеке можно узнать из доклада Владимира Варанкина "[Зачем мы написали js-фреймворк?](http://video.yandex.ua/users/ya-events/view/880/#hq)".
+Для описания карточки мы воспользовались модульной системой [ymodules](http://ru.bem.info/tools/bem/modules/) и библиотекой [i-bem.js](http://ru.bem.info/libs/bem-core/v2/desktop/i-bem/). Подробнее о данной библиотеке можно узнать из доклада Владимира Варанкина "[Зачем мы написали js-фреймворк?](http://video.yandex.ua/users/ya-events/view/880/#hq)".
 
 На самом деле, в реальном приложении карточка может быть более функциональна, например она может содержать сложную верстку, просчитывать и отображать время до закрытия организации, отлавливать клики на себе и разворачиваться с детальной информацией и т.д.
 
 В таком случае, из простого хелпера возвращающего отформатированный текст, идею карточки можно развить в самодостаточный независимый блок приложения с множеством элементов и модификаторов в разных технологиях (css, js, bemhtml), который принимает на вход DOM-элемент и JSON с "сырыми" данными, разворачивается в этом DOM-элементе и начинает функционировать.
 
-Блок i-geoclicker
+### Блок `geoclicker`
 =============
 
 Кроме самого блока карточки организации нам потребуется плагин к LeafLet-у, который будет отлавливать клик по карте и показывать карточку в балуне.
 
 Создадим его:
 
-    $ ./node_modules/bem/bin/bem create block i-geoclicker -l desktop.blocks -T js
+```sh
+$ mkdir ./desktop.blocks/geoclicker
+$ touch ./desktop.blocks/geoclicker/geoclicker.js
+```
 
-И опишем поведение блока в файле desktop.blocks/i-geoclicker/i-geoclicker.js:
+И опишем поведение блока в файле desktop.blocks/geoclicker/geoclicker.js:
 
-    BEM.decl ('i-geoclicker', {}, {
-        /**
-         * @type {L.Map}
-         */
-        _map: null,
+```js
+modules.define(
+    'geoclicker',
+    ['i-bem__dom', 'jquery', 'firmcard'],
+    function(provide, BEMDOM, $, firmcard) {
 
-        /**
-         * @type {L.LatLng}
-         */
-        _lastLatLng: null,
+        provide(BEMDOM.decl(this.name, {}, {
+            /**
+             * @type {L.Map}
+             */
+            _map: null,
 
-        /**
-         * @param {L.Map} map
-         */
-        addTo: function (map) {
-           this._map = map;
-           this._map.on({
-               'click': this.getGeoObject
-           }, this);
-        },
+            /**
+             * @type {L.LatLng}
+             */
+            _lastLatLng: null,
 
-        /**
-         * @param {L.MouseEvent} mouseEvent
-         */
-        getGeoObject: function (mouseEvent) {
-           this._lastLatLng = mouseEvent.latlng;
-           $.ajax({
-               url: 'http://catalog.api.2gis.ru/geo/search',
-               data: {
-                   q: mouseEvent.latlng.lng + ',' + mouseEvent.latlng.lat,
-                   key: this.API_KEY,
-                   version: this.API_VERSION,
-                   output: 'jsonp',
-                   types: 'house,sight,station_platform'
-              },
-              dataType: 'jsonp',
-              success: this.showPopup,
-              context: this
-          });
-        },
+            /**
+             * @param {L.Map} map
+             */
+            addTo: function (map) {
+                this._map = map;
+                this._map.on({
+                    'click': this.getGeoObject
+                }, this);
+            },
 
-        /**
-         * @param {Object} data
-         */
-        showPopup: function (data) {
-           if(data.result !== undefined) {
-               var content = BEM.blocks['i-firmcard'].getFormattedText(data.result[0]);
-               var popup = L.popup()
-                   .setLatLng(this._lastLatLng)
-                   .setContent(content)
-                   .openOn(this._map);
-           }
-        },
+            /**
+             * @param {L.MouseEvent} mouseEvent
+             */
+            getGeoObject: function (mouseEvent) {
+                this._lastLatLng = mouseEvent.latlng;
+                $.ajax({
+                    url: 'http://catalog.api.2gis.ru/geo/search',
+                    data: {
+                        q: mouseEvent.latlng.lng + ',' + mouseEvent.latlng.lat,
+                        key: this.API_KEY,
+                        version: this.API_VERSION,
+                        output: 'jsonp',
+                        types: 'house,sight,station_platform'
+                   },
+                   dataType: 'jsonp',
+                   success: this.showPopup,
+                   context: this
+               });
+            },
 
-        /**
-         * @type {String}
-         */
-        API_KEY: 'rujrdp3400',
+            /**
+             * @param {Object} data
+             */
+            showPopup: function (data) {
+                (if (data.result === undefined) return;)
 
-        /**
-         * @type {Number}
-         */
-        API_VERSION: 1.3
-    });
+                var content = firmcard.getFormattedText(data.result[0]);
+                var popup = L.popup()
+                    .setLatLng(this._lastLatLng)
+                    .setContent(content)
+                    .openOn(this._map);
+            },
+
+            /**
+             * @type {String}
+             */
+            API_KEY: 'rujrdp3400',
+
+            /**
+             * @type {Number}
+             */
+            API_VERSION: 1.3
+        }));
+
+
+});
+```
 
 Как видим, блок довольно простой и состоит всего из 3-х методов:
 * addTo - обработчик добавления плагина на карту LeafLet, в котором происходит подписка на событие клика по карте;
 * getGeoObject - метод для получения данных из геокодера 2GIS;
 * showPopup - метод для отображения балуна с информацией об организации.
 
-Блок b-map
+### Блок map
 =============
 
-Для того, чтобы карта отобразилась на странице, её нужно инициализировать. За инициализацию карты с написанным нами плагином будет отвечать блок b-map, создадим его:
+Для того, чтобы карта отобразилась на странице, её нужно инициализировать. За инициализацию карты с написанным нами плагином будет отвечать блок map, создадим его:
 
-    $ ./node_modules/bem/bin/bem create block b-map -l desktop.blocks -T js -T css -T bemhtml
+```sh
+$ mkdir ./desktop.blocks/map
+$ touch ./desktop.blocks/map/map.js
+$ touch ./desktop.blocks/map/map.css
+$ touch ./desktop.blocks/map/map.bemhtml
+```
 
-Опишем файл desktop.blocks/b-map/b-map.js:
+Опишем файл desktop.blocks/map/map.js:
 
-    BEM.DOM.decl ('b-map',
-    {
+```js
+modules.define('map', ['i-bem__dom', 'geoclicker'], function(provide, BEMDOM, geoclicker) {
+
+    provide(BEMDOM.decl(this.name, {
         onSetMod: {
-          'js': function() {
-               var map = L.map(this.domElem.get(0)).setView([54.98, 82.89], 16);
-               var geoclicker = BEM.blocks['i-geoclicker'];
-               L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png').addTo(map);
-               geoclicker.addTo(map);
-           }
+            js: {
+                inited: function() {
+                    var map = L.map(this.domElem.get(0)).setView([54.98, 82.89], 16);
+                    // L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png').addTo(map);
+                    L.tileLayer('http://{s}.tiles.mapbox.com/v3/dmtry.k2n318k0/{z}/{x}/{y}.png', {
+                        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                        maxZoom: 18
+                    }).addTo(map);
+                    geoclicker.addTo(map);
+                }
+            }
         }
-    },
-    {});
 
-Опишем файл desktop.blocks/b-map/b-map.css:
+    }));
+});
+```
 
-    .b-map {
-        height: 600px;
-    }
+Опишем файл desktop.blocks/map/map.css:
 
-И desktop.blocks/b-map/b-map.bemhtml:
+```css
+.map {
+    height: 600px;
+}
+```
 
-    block b-map {
-        js: true
-    }
+И desktop.blocks/map/map.bemhtml:
 
-Блок i-leaflet
-=============
+```js
+block('map')(
+    js()(true)
+)
+```
 
-Конечно же, без самой библиотеки Leaflet карта не заработает, создадим блок библиотеки с соответствующими технологиями:
 
-    $ ./node_modules/bem/bin/bem create block i-leaflet -l desktop.blocks -T js -T css -T ie.css
-
-Переписывать чужую библиотеку в БЭМ-терминах — не самая благодарная работа, потому просто скопируем содержимое [dist-файлов](https://github.com/CloudMade/Leaflet/tree/master/dist) в соответствующие файлы нашего блока, а картинки положим в папку i-leaflet/images.
-
-Зависимости
+### Зависимости
 =============
 
 На данный момент у нас имеется такая цепочка зависимостей между блоками:
@@ -234,67 +271,41 @@
 
 Эти зависимости нужно где-то описать. Описание зависимостей производится с помощью файлов deps.js. Каждый блок должен сам знать, что ему нужно для полноценной работы.
 
-Файл зависимостей для блока b-page уже есть, создадим такие же файлы для других блоков:
+Создадим файлы зависимостей для блоков:
 
-    $ ./node_modules/bem/bin/bem create block i-firmcard -l desktop.blocks -T deps.js
-    $ ./node_modules/bem/bin/bem create block i-geoclicker -l desktop.blocks -T deps.js
-    $ ./node_modules/bem/bin/bem create block b-map -l desktop.blocks -T deps.js
+```sh
+$ touch ./desktop.blocks/map/map.deps.js
+$ touch ./desktop.blocks/geoclicker/geoclicker.deps.js
+```
 
-Заполним файл desktop.blocks/b-page/b-page.deps.js:
+Заполним файл desktop.blocks/geoclicker/geoclicker.deps.js:
 
-    ({
-        mustDeps: [{
-           block: 'i-bem',
-           elem: 'dom',
-           mods: { init: 'auto' }
-        }]
-    })
+```js
+({
+    mustDeps: [
+        'firmcard'
+    ]
+})
+```
 
-Заполним файл desktop.blocks/i-firmcard/i-firmcard.deps.js:
+Заполним файл desktop.blocks/map/map.deps.js:
 
-    ({
-        mustDeps: [{
-            "block": "i-bem",
-            "elem": "dom"
-        }]
-    })
+```js
+({
+    shouldDeps: [
+        'geoclicker'
+    ]
+})
+```
 
-Заполним файл desktop.blocks/i-geoclicker/i-geoclicker.deps.js:
-
-    ({
-        mustDeps: [{
-            "block": 'i-firmcard'
-        },
-        {
-           "block": "i-bem",
-           "elem": "dom"
-        }]
-    })
-
-Заполним файл desktop.blocks/b-map/b-map.deps.js:
-
-    ({
-        mustDeps: [{
-            "block": 'i-leaflet'
-        },
-        {
-            "block": 'i-geoclicker'
-        },
-        {
-
-           "block": "i-bem",
-           "elem": "dom"
-        }]
-    })
-
-Сборка
+### Сборка
 =============
 
 Выполним сборку проекта:
 
-    $ ./node_modules/bem/bin/bem make
+    $ enb make
 
-Откроем файл desktop.bundles/index/index.html в браузере и посмотрим на результат работы нашего приложения:
+Откроем файл [desktop.bundles/index/index.html](http://localhost:8080/desktop.bundles/index/index.html) в браузере и посмотрим на результат работы нашего приложения:
 ![Результат сборки](http://img-fotki.yandex.ru/get/9557/221798411.0/0_b9e17_ec9d4b59_XXL.png)
 
 Приложение готово к работе. Теперь при клике в каждое здание мы получим краткую информацию о нем.

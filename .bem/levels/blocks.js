@@ -1,6 +1,0 @@
-exports.getTechs = function() {
-
-    return {};
-
-};
-

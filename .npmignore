@@ -1,12 +1,5 @@
+# bem and libs
 libs/
-node_modules/
-.DS_Store
-.idea
-.project
-.svn
-npm-debug.log
-
-# bem
 .bem/cache/
 .enb/tmp/
 *bundles*/*/*.*

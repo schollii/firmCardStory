@@ -1,13 +1,15 @@
 ({
-    block: 'b-page',
+    block: 'page',
     title: 'Карта Новосибирска',
-    head: [
-        { elem: 'css', url: '_index.css' },
-        { elem: 'css', url: '_index', ie: true },
-        { elem: 'js', url: 'http://yandex.st/jquery/1.8.2/jquery.min.js' },
-        { elem: 'js', url: '_index.js' }
+    styles: [
+        { elem: 'css', url: 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css' },
+        { elem: 'css', url: 'index.min.css' }
+    ],
+    scripts: [
+        { elem: 'js', url: 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js' },
+        { elem: 'js', url: 'index.min.js' }
     ],
     content: [
-        { block: 'b-map' }
+        { block: 'map' }
     ]
-})
+});
