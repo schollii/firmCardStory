@@ -1,31 +1,31 @@
-Today we will take a look at the example of a simple map service built using 
-the [BEM methodology](http://bem.info/).
+# Creating the map plagin on BEM
+
+Today we will take a look at the example of a simple map service based on the [BEM methodology](http://bem.info/).
 
 ### Intro
-=============
 
-Project Manager:
-I want to have a map, and when I click at the building on it I want a balloon to emerge
-with information about organization inside this building.
+Tasks from the project manager always sound like this:
+I want to have a map. And I want to see an emerging balloon message when I click on a building. Each balloon should contain the information about the organization inside this building.
 
-Developer:
+Based on the request above the developer ctreates corresponding tasks:
+
 * Make an HTML page;
 * Use [Leaflet](https://github.com/Leaflet/Leaflet) library;
-* Write a reusable plugin to display company info (company card);
-* To provide reusability, try to make it using BEM methodology;
+* Write a reusable plugin to display company information (company card).
 
-Reusable plugin?
-* Catch a click event on the map;
-* Send a request to [2GIS geocoder](http://api.2gis.ru/doc/geo/search/), it will return
- information about the company according to the coordinates;
-* Show a balloon with the info.
+Since the project involves the reusable parts of the code, we will try to implement it using the BEM methodology.
 
-Let's call our project firmCardStory.
+What is Reusable plugin? And why do we need it in our project?
+
+* It catches a click event on the map;
+* It sends a request to [2GIS geocoder](http://api.2gis.ru/doc/geo/search/), that will return information about the company according to the coordinates;
+* It shows the balloon with the information.
+
+Let's call our project `firmCardStory`.
 
 ### Project Initialization.
-=============
 
-Initialize project from a predefined repository:
+Initialize project from a [predefined repository](https://bem.info/tutorials/project-stub/) and set all required dependencies:
 
 ```sh
 git clone https://github.com/bem/project-stub.git firmCardStory
@@ -33,72 +33,71 @@ cd firmCardStory
 npm install
 ```
 
-Complete the project's `Build Process`:
+Complete the build process of the project using [ENB](http://enb-make.info/):
 
 ```sh
 $ enb make
 ```
 
-Now we can browse to: [desktop.bundles/index/index.html](http://localhost:8080/desktop.bundles/index/index.html) 
-and see the page that was built:
+To check the results, browse to [desktop.bundles/index/index.html](http://localhost:8080/desktop.bundles/index/index.html).
+You will see the page that was built:
 ![The build's result ](http://img-fotki.yandex.ru/get/6705/221798411.0/0_b9e18_bcebeab1_XL.jpg)
 
-It's very convenient to use `enb server` during 
-the development phase of a project.  `enb server` will perform the necessary parts of 
-the build process for each browser request received.  To run the `enb server` you need 
-to execute it from it's path located within the project folder:
+It is very convenient to use `enb server` during
+the development phase of a project. The `enb server` will rebuild the necessary parts of the project every time you reload the page in the browser. To run the `enb server`, you should execute the following command from the project directory:
 
-    $ ./node_modules/enb/bin/enb server
+```sh
+$ ./node_modules/enb/bin/enb server
+```
 
-Then we can browse to the address: http://localhost:8080/desktop.bundles/index.
+Then we can browse to the address: [http://localhost:8080/desktop.bundles/index](http://localhost:8080/desktop.bundles/index).
 
-The Page Template
-=============
+### The template of the page
 
-Let's change the page structure by filling out the file `desktop.bundles/index/index.bemjson.js` 
-with the following content:
+Let's create the new page structure by changing the [BENJSON](https://bem.info/technology/bemjson/current/bemjson/) declaration of the `desktop.bundles/index/index.bemjson.js` file:
 
 ```js
 ({
-    block: 'page',
-    title: 'Карта Новосибирска',
-    styles: [
-        { elem: 'css', url: 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css' },
-        { elem: 'css', url: 'index.min.css' }
+    block : 'page',
+    title : 'Map of Novosibirsk',
+    head : [
+        { elem : 'css', url : 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css' },
+        { elem : 'css', url : 'index.min.css' },
+        { elem : 'js', url : 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js' },
+        { elem : 'js', url : 'index.min.js' }
     ],
-    scripts: [
-        { elem: 'js', url: 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js' },
-        { elem: 'js', url: 'index.min.js' }
-    ],
-    content: [
-        { block: 'map' }
+    content : [
+        { block : 'map' }
     ]
 });
 ```
 
-In this file we declared that:
-* The block [page](http://ru.bem.info/libs/bem-core/v2/desktop/page/) of library [bem-core](http://ru.bem.info/libs/bem-core/) is being used for the page build.
-* The title is "Map of Novosibirsk".
-* Define which css and js files will be linked to the page.
-* Define the page content as a `map` block.
+In this file we declared the following:
 
-Learn more about `BEMJSON` in [documentation](http://ru.bem.info/technology/bemjson/2.3.0/bemjson/).
+* The [page](http://ru.bem.info/libs/bem-core/v2/desktop/page/) block of the [bem-core](http://ru.bem.info/libs/bem-core/) library is being used to build the page.
+* The title of the page is "Map of Novosibirsk".
+* The CSS and JS files that will be linked to the page.
+* The `map` block forms the page content.
 
-### `firmcard` Block
-=============
+To implement the requested functionality we should create the following blocks:
 
-We need a block which will:
-* Take input data about a company in JSON format.
-* Return well-formed html-code for the company card.
+* [firmcard](#firmcard)
+* [geoclicker](#geoclicker)
+* [map](#map)
 
-Create this block at the `desktop.blocks` level using the `js` technology:
+<a name="firmcard"></a>
+### The `firmcard` block
+
+The `firmcard` block will take the input data about the company in JSON format and return well-formed HTML-code to the company card.
+
+Create this block at the `desktop.blocks` level using the `JavaScript` technology:
 
 ```sh
 $ mkdir ./desktop.blocks/firmcard
 $ touch ./desktop.blocks/firmcard/firmcard.js
 ```
 
-Then paste the following code in the file `desktop.blocks/firmcard/firmcard.js`:
+Then paste the following code in the `desktop.blocks/firmcard/firmcard.js` file:
 
 ```js
 modules.define('firmcard', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $) {
@@ -109,33 +108,28 @@ modules.define('firmcard', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $
          */
         getFormattedText: function (data) {
             return [
-                '<b>Информация:</b><br />',
-                'Адрес: ' + data.name,
-                'Тип: ' + data.attributes.purpose
+                '<b>Information:</b><br />',
+                'Address: ' + data.name,
+                'Type: ' + data.attributes.purpose
             ].join('<br>');
         }
     }));
 });
 ```
 
-We use the `ymodules` module system and `i-bem.js` JavaScript library for the company card declaration.
-**Russian Only:** for more details see Vladimir Varankin's presentation 
-"[ Why we wrote yet another JS framework?](http://video.yandex.ua/users/ya-events/view/880/#hq)".
+We use the [YModules](https://bem.info/tools/bem/modules/) module system and [i-bem.js](https://bem.info/libs/bem-core/current/desktop/i-bem/) framework to create the company card.
 
-In a real-world application the "Company Card" would have more functionality.  
-For example it could have a more sophisticated layout, calculate and display 
+In a real-world application the "Company Card" would have more functionality. For example, it could have a more sophisticated layout, could calculate and display
 working hours left until the end of the day, show expanded details based on mouse clicks, etc.
 
-In this case, from a simple helper block, that returns only some simply-formatted text, 
-the idea can grow into an independent block with numerous elements and modifiers which are implemented 
-in different technologies (such as: css, js, bemhtml). This block receives a DOM-element 
-and some raw data in JSON format, and then expands into this DOM-element and begins to function.
+In this case, from a simple helper block, that returns only some simply-formatted text,
+the idea can grow into an independent block with numerous elements and modifiers which are implemented
+in different technologies (such as CSS, JS, BEMHTML). This block receives a DOM-element and some raw data in JSON format, and then expands into this DOM-element and starts to function.
 
-### `geoclicker` Block 
-=============
+<a name="geoclicker"></a>
+### The `geoclicker` Block
 
-Besides the company card block itself we will need a plugin for Leaflet. The plugin will capture click 
-on the map and show the company card in a balloon.
+In addition to the company card block we will need a plugin for Leaflet. The plugin will catch the click event on the map and show the company card balloon.
 
 Let's create it:
 
@@ -144,7 +138,7 @@ $ mkdir ./desktop.blocks/geoclicker
 $ touch ./desktop.blocks/geoclicker/geoclicker.js
 ```
 
-Place the following content into the block-file which is located here: `desktop.blocks/geoclicker/geoclicker.js`:
+Place the following content into the block `desktop.blocks/geoclicker/geoclicker.js` file:
 
 ```js
 modules.define(
@@ -222,17 +216,15 @@ modules.define(
 ```
 
 As we can see, the block is quite simple, and consists of only 3 methods:
-* addTo is a handler for adding the map-plugin [Leaflet.js](//github.com/Leaflet/Leaflet), 
-it will mange adding the click events to the map objects;
-* getGeoObject is a method for receiving data from the 2GIS geocoder;
-* showPopup is a method that shows a balloon with the company card.
 
-### 'map' Block
-=============
+* `addTo` is a handler for adding the [Leaflet.js](//github.com/Leaflet/Leaflet) map plugin, that subscribes to the click events on the map objects;
+* `getGeoObject` is a method for receiving data from the 2GIS geocoder;
+* `showPopup` is a method that shows the balloon with the company card.
 
-For the map to show-up on the page, it first has to be initiated. The `map` block is 
-responsible for initializing the map with our plugin that we wrote above, let's create 
-this block in three files:
+<a name="map"></a>
+### The 'map' Block
+
+To show the map on a page, you need to initialize it. The `map` block is responsible for initializing the map with our plugin that we wrote above. Let's create this block:
 
 ```sh
 $ mkdir ./desktop.blocks/map
@@ -241,7 +233,7 @@ $ touch ./desktop.blocks/map/map.css
 $ touch ./desktop.blocks/map/map.bemhtml
 ```
 
-Paste the following code into the file `desktop.blocks/b-map/b-map.js`:
+Paste the following code into the `desktop.blocks/b-map/b-map.js` file:
 
 ```js
 modules.define('map', ['i-bem__dom', 'geoclicker'], function(provide, BEMDOM, geoclicker) {
@@ -264,7 +256,8 @@ modules.define('map', ['i-bem__dom', 'geoclicker'], function(provide, BEMDOM, ge
     }));
 });
 ```
-Then, paste the following code into the `filedesktop.blocks/map/map.css`:
+
+Then, add some style rules to the block in the `filedesktop.blocks/map/map.css` file:
 
 ```css
 .map {
@@ -272,7 +265,7 @@ Then, paste the following code into the `filedesktop.blocks/map/map.css`:
 }
 ```
 
-Lastly, paste the following code into the file `desktop.blocks/map/map.bemhtml`:
+Lastly, create a template in the `desktop.blocks/map/map.bemhtml` file:
 
 ```js
 block('map')(
@@ -281,16 +274,14 @@ block('map')(
 ```
 
 ### Dependencies
-=============
 
-Currently, we have the following chain of dependencies linking the blocks:
+Currently, we have the following chain of [dependencies](http://bem.info/tools/bem/bem-tools/depsjs/) linking to the blocks:
 
 ![Dependencies](http://img-fotki.yandex.ru/get/5000/221798411.0/0_b9e16_fc510a98_L.jpg)
 
-The dependencies are described with the help of `deps.js`.  
-Each block should contain everything it needs to do its job.
+The dependencies are described with the help of `deps.js`.
 
-We already have a dependency file for `b-page`. Let's make similar files for the other blocks:
+We already have a dependency file for the `page` block. Let's make similar files for the other blocks:
 
 ```sh
 $ touch ./desktop.blocks/map/map.deps.js
@@ -299,7 +290,7 @@ $ touch ./desktop.blocks/geoclicker/geoclicker.deps.js
 
 Paste the following content into the corresponding files:
 
-In: `desktop.blocks/geoclicker/geoclicker.deps.js` paste:
+`desktop.blocks/geoclicker/geoclicker.deps.js`:
 
 ```js
 ({
@@ -309,7 +300,7 @@ In: `desktop.blocks/geoclicker/geoclicker.deps.js` paste:
 })
 ```
 
-In: `desktop.blocks/map/map.deps.js` paste:
+`desktop.blocks/map/map.deps.js`:
 
 ```js
 ({
@@ -320,18 +311,19 @@ In: `desktop.blocks/map/map.deps.js` paste:
 ```
 
 ### The Build
-=============
 
-Begin the project's `Build Process` (AKA: Make Process):
+Build the project:
 
-    $ enb make
+```sh
+$ enb make
+```
 
-Open `http://localhost:8080/desktop.bundles/index/index.html` in a browser, to see the result of 
-our application's work:
+Open [http://localhost:8080/desktop.bundles/index/index.html](http://localhost:8080/desktop.bundles/index/index.html) in a browser, to see the result of our application work:
 
-![The result of build](http://img-fotki.yandex.ru/get/9557/221798411.0/0_b9e17_ec9d4b59_XXL.png)
+![The result of the build](http://img-fotki.yandex.ru/get/9557/221798411.0/0_b9e17_ec9d4b59_XXL.png)
 
-The application is ready to go. Now after every click on any building on the map, we get some 
-brief information about the building (The `Company Card`).
+The application is ready. Now every click on any building on the map causes the balloon with some brief information about the building (The `Company Card`).
+
+The BEM methodology gives us an additional bonus: now to add some information to the company card, you need to change the only one block in your project.
 
 Fork [this](https://github.com/AndreyGeonya/firmCardStory) project on GitHub.

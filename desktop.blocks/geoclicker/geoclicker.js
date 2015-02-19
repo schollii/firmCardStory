@@ -48,7 +48,7 @@ modules.define(
              * @param {Object} data
              */
             showPopup: function (data) {
-                (if (data.result === undefined) return;)
+                if (data.result === undefined) return;
 
                 var content = firmcard.getFormattedText(data.result[0]);
                 var popup = L.popup()
