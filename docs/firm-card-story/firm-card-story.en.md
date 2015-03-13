@@ -277,7 +277,7 @@ block('map')(
 
 Currently, we have the following chain of [dependencies](http://bem.info/tools/bem/bem-tools/depsjs/) linking to the blocks:
 
-![Dependencies](http://img-fotki.yandex.ru/get/5000/221798411.0/0_b9e16_fc510a98_L.jpg)
+![Dependencies](//raw.githubusercontent.com/dab/firmCardStory/master/docs/firm-card-story/__images/firm-card-story__images.deps.jpeg)
 
 The dependencies are described with the help of `deps.js`.
 
