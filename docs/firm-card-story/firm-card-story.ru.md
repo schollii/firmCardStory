@@ -267,7 +267,7 @@ block('map')(
 ### Зависимости
 
 На данный момент у нас имеется такая цепочка зависимостей между блоками:
-![Зависимости](http://img-fotki.yandex.ru/get/5000/221798411.0/0_b9e16_fc510a98_L.jpg)
+![Зависимости](//raw.githubusercontent.com/dab/firmCardStory/master/docs/firm-card-story/__images/firm-card-story__images.deps.jpeg)
 
 Эти зависимости нужно где-то описать. [Описание зависимостей](http://ru.bem.info/tools/bem/bem-tools/depsjs/) производится с помощью файлов `deps.js`. Каждый блок должен хранить информацию о том, что ему нужно для полноценной работы.
 
