@@ -1,6 +1,6 @@
 # Creating the map plagin on BEM
 
-Today we will take a look at the example of a simple map service based on the [BEM methodology](http://bem.info/).
+Today we will take a look at the example of a simple map service based on the [BEM methodology](https://en.bem.info/).
 
 ### Intro
 
@@ -41,7 +41,7 @@ $ enb make
 
 To check the results, browse to [desktop.bundles/index/index.html](http://localhost:8080/desktop.bundles/index/index.html).
 You will see the page that was built:
-![The build's result ](http://img-fotki.yandex.ru/get/6705/221798411.0/0_b9e18_bcebeab1_XL.jpg)
+![The build's result ](https://img-fotki.yandex.ru/get/6705/221798411.0/0_b9e18_bcebeab1_XL.jpg)
 
 It is very convenient to use `enb server` during
 the development phase of a project. The `enb server` will rebuild the necessary parts of the project every time you reload the page in the browser. To run the `enb server`, you should execute the following command from the project directory:
@@ -74,7 +74,7 @@ Let's create the new page structure by changing the [BENJSON](https://bem.info/t
 
 In this file we declared the following:
 
-* The [page](http://ru.bem.info/libs/bem-core/v2/desktop/page/) block of the [bem-core](http://ru.bem.info/libs/bem-core/) library is being used to build the page.
+* The [page](https://en.bem.info/libs/bem-core/v2/desktop/page/) block of the [bem-core](https://en.bem.info/libs/bem-core/) library is being used to build the page.
 * The title of the page is "Map of Novosibirsk".
 * The CSS and JS files that will be linked to the page.
 * The `map` block forms the page content.
@@ -117,7 +117,7 @@ modules.define('firmcard', ['i-bem__dom', 'jquery'], function(provide, BEMDOM, $
 });
 ```
 
-We use the [YModules](https://bem.info/tools/bem/modules/) module system and [i-bem.js](https://bem.info/libs/bem-core/current/desktop/i-bem/) framework to create the company card.
+We use the [YModules](https://en.bem.info/tools/bem/modules/) module system and [i-bem.js](https://en.bem.info/tutorials/bem-js-tutorial/) framework to create the company card.
 
 In a real-world application the "Company Card" would have more functionality. For example, it could have a more sophisticated layout, could calculate and display
 working hours left until the end of the day, show expanded details based on mouse clicks, etc.
@@ -217,7 +217,7 @@ modules.define(
 
 As we can see, the block is quite simple, and consists of only 3 methods:
 
-* `addTo` is a handler for adding the [Leaflet.js](//github.com/Leaflet/Leaflet) map plugin, that subscribes to the click events on the map objects;
+* `addTo` is a handler for adding the [Leaflet.js](https://github.com/Leaflet/Leaflet) map plugin, that subscribes to the click events on the map objects;
 * `getGeoObject` is a method for receiving data from the 2GIS geocoder;
 * `showPopup` is a method that shows the balloon with the company card.
 
@@ -275,9 +275,9 @@ block('map')(
 
 ### Dependencies
 
-Currently, we have the following chain of [dependencies](http://bem.info/tools/bem/bem-tools/depsjs/) linking to the blocks:
+Currently, we have the following chain of [dependencies](https://en.bem.info/tools/bem/bem-tools/depsjs/) linking to the blocks:
 
-![Dependencies](//raw.githubusercontent.com/dab/firmCardStory/master/docs/firm-card-story/__images/firm-card-story__images.deps.jpeg)
+![Dependencies](https://img-fotki.yandex.ru/get/4512/246231603.0/0_14ad53_4baec27f_orig)
 
 The dependencies are described with the help of `deps.js`.
 
@@ -320,7 +320,7 @@ $ enb make
 
 Open [http://localhost:8080/desktop.bundles/index/index.html](http://localhost:8080/desktop.bundles/index/index.html) in a browser, to see the result of our application work:
 
-![The result of the build](http://img-fotki.yandex.ru/get/9557/221798411.0/0_b9e17_ec9d4b59_XXL.png)
+![The result of the build](https://img-fotki.yandex.ru/get/9557/221798411.0/0_b9e17_ec9d4b59_XXL.png)
 
 The application is ready. Now every click on any building on the map causes the balloon with some brief information about the building (The `Company Card`).
 
