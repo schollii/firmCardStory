@@ -43,7 +43,7 @@ npm install
 $ ./node_modules/enb/bin/enb server
 ```
 
-Откроем в браузере файл [desktop.bundles/index/index.html](localhost:8080/desktop.bundles/index/index.html) и посмотрим что страница собралась:
+Откроем в браузере файл `http://localhost:8080/desktop.bundles/index/index.html` и посмотрим что страница собралась:
 
 ![Результат сборки](https://img-fotki.yandex.ru/get/6705/221798411.0/0_b9e18_bcebeab1_XL.jpg)
 
@@ -304,7 +304,7 @@ $ touch ./desktop.blocks/geoclicker/geoclicker.deps.js
 
     $ enb make
 
-Откроем файл [desktop.bundles/index/index.html](http://localhost:8080/desktop.bundles/index/index.html) в браузере и посмотрим на результат работы нашего приложения:
+Откроем файл `http://localhost:8080/desktop.bundles/index/index.html` в браузере и посмотрим на результат работы нашего приложения:
 ![Результат сборки](https://img-fotki.yandex.ru/get/9557/221798411.0/0_b9e17_ec9d4b59_XXL.png)
 
 Приложение готово к работе. Теперь при клике в каждое здание мы получим краткую информацию о нем.

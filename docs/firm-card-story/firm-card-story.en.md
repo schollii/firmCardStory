@@ -39,7 +39,7 @@ Complete the build process of the project using [ENB](http://enb-make.info/):
 $ enb make
 ```
 
-To check the results, browse to [desktop.bundles/index/index.html](http://localhost:8080/desktop.bundles/index/index.html).
+To check the results, browse to `http://localhost:8080/desktop.bundles/index/index.html`.
 You will see the page that was built:
 ![The build's result ](https://img-fotki.yandex.ru/get/6705/221798411.0/0_b9e18_bcebeab1_XL.jpg)
 
@@ -50,7 +50,7 @@ the development phase of a project. The `enb server` will rebuild the necessary 
 $ ./node_modules/enb/bin/enb server
 ```
 
-Then we can browse to the address: [http://localhost:8080/desktop.bundles/index](http://localhost:8080/desktop.bundles/index).
+Then we can browse to the address: `http://localhost:8080/desktop.bundles/index`.
 
 ### The template of the page
 
@@ -318,7 +318,7 @@ Build the project:
 $ enb make
 ```
 
-Open [http://localhost:8080/desktop.bundles/index/index.html](http://localhost:8080/desktop.bundles/index/index.html) in a browser, to see the result of our application work:
+Open `http://localhost:8080/desktop.bundles/index/index.html` in a browser, to see the result of our application work:
 
 ![The result of the build](https://img-fotki.yandex.ru/get/9557/221798411.0/0_b9e17_ec9d4b59_XXL.png)
 
