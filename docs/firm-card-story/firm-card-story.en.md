@@ -33,7 +33,7 @@ cd firmCardStory
 npm install
 ```
 
-Complete the build process of the project using [ENB](http://enb-make.info/):
+Complete the build process of the project using [ENB](https://en.bem.info/toolbox/enb/):
 
 ```sh
 $ enb make
